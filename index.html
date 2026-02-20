@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ICONIQ — Outfit Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #FAF6F0;
+      --blush: #F2A7A7;
+      --coral: #E8624A;
+      --gold: #D4A853;
+      --deep: #1A0A2E;
+      --plum: #6B2D6B;
+      --mint: #7ECBB5;
+      --white: #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--deep);
+      overflow-x: hidden;
+    }
+
+    /* ─── CURSOR ─── */
+    body { cursor: none; }
+    #cursor {
+      width: 14px; height: 14px;
+      background: var(--coral);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: multiply;
+    }
+    body:has(a:hover) #cursor, body:has(button:hover) #cursor {
+      width: 40px; height: 40px;
+      background: var(--gold);
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(250,246,240,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(212,168,83,0.15);
+      animation: slideDown 0.8s ease forwards;
+    }
+    @keyframes slideDown { from { opacity:0; transform: translateY(-30px); } to { opacity:1; transform: translateY(0); } }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--coral), var(--plum));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--deep);
+      font-weight: 500; font-size: 0.9rem; letter-spacing: 0.5px;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 2px; background: var(--coral);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cart {
+      background: var(--deep); color: var(--white);
+      border: none; padding: 0.6rem 1.4rem;
+      border-radius: 50px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 500;
+      cursor: none; transition: background 0.3s, transform 0.2s;
+    }
+    .nav-cart:hover { background: var(--coral); transform: scale(1.05); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      padding-top: 5rem;
+      overflow: hidden;
+    }
+    .hero-left {
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: 6rem 3rem 4rem 5rem;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--gold); color: var(--white);
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 2px;
+      text-transform: uppercase; padding: 0.4rem 1rem;
+      border-radius: 50px; margin-bottom: 1.5rem;
+      width: fit-content;
+      animation: fadeUp 0.8s 0.3s both;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s 0.5s both;
+    }
+    .hero-title em { font-style: italic; color: var(--coral); }
+    .hero-sub {
+      color: #6B6B7B; font-size: 1rem; line-height: 1.7;
+      max-width: 380px; margin-bottom: 2.5rem;
+      animation: fadeUp 0.8s 0.7s both;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.9s both;
+    }
+    .btn-primary {
+      background: var(--coral); color: var(--white);
+      border: none; padding: 1rem 2.2rem;
+      border-radius: 50px; font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      cursor: none; transition: all 0.3s;
+      box-shadow: 0 8px 30px rgba(232,98,74,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(232,98,74,0.45); }
+    .btn-outline {
+      background: transparent; color: var(--deep);
+      border: 2px solid var(--deep); padding: 1rem 2.2rem;
+      border-radius: 50px; font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif; font-weight: 500;
+      cursor: none; transition: all 0.3s;
+    }
+    .btn-outline:hover { background: var(--deep); color: var(--white); }
+
+    .hero-stats {
+      display: flex; gap: 2.5rem; margin-top: 3rem;
+      animation: fadeUp 0.8s 1.1s both;
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; font-weight: 700; color: var(--plum);
+    }
+    .stat-label { font-size: 0.8rem; color: #888; margin-top: 0.2rem; }
+
+    .hero-right {
+      position: relative;
+      background: linear-gradient(135deg, #F9E8E8 0%, #E8D5F5 50%, #D5EAF5 100%);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: float 6s ease-in-out infinite;
+    }
+    .blob1 { width: 300px; height: 300px; background: rgba(242,167,167,0.5); top: 10%; left: 10%; }
+    .blob2 { width: 250px; height: 250px; background: rgba(126,203,181,0.4); bottom: 10%; right: 10%; animation-delay: 2s; }
+    .blob3 { width: 200px; height: 200px; background: rgba(212,168,83,0.3); top: 50%; left: 40%; animation-delay: 4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.05); }
+    }
+
+    .hero-card {
+      position: relative; z-index: 2;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 24px;
+      padding: 2rem;
+      width: 280px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+      animation: heroCardFloat 4s ease-in-out infinite;
+    }
+    @keyframes heroCardFloat {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-15px) rotate(-2deg); }
+    }
+    .hero-card-img {
+      width: 100%; height: 200px;
+      background: linear-gradient(135deg, var(--blush), var(--plum));
+      border-radius: 16px; margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .hero-card-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+    .hero-card-price { color: var(--coral); font-weight: 600; margin-top: 0.3rem; }
+    .hero-card-tag {
+      position: absolute; top: -10px; right: -10px;
+      background: var(--gold); color: white;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 0.4rem 0.8rem; border-radius: 50px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── MARQUEE ─── */
+    .marquee-wrap {
+      background: var(--deep); padding: 1rem 0; overflow: hidden;
+      display: flex;
+    }
+    .marquee-track {
+      display: flex; gap: 3rem;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-track span {
+      color: var(--white); font-size: 0.85rem;
+      letter-spacing: 2px; text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .marquee-track .dot { color: var(--gold); font-size: 1.2rem; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ─── CATEGORIES ─── */
+    .section { padding: 6rem 5rem; }
+    .section-header { margin-bottom: 3rem; }
+    .section-tag {
+      font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--coral); font-weight: 600; margin-bottom: 0.8rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 900;
+    }
+
+    .categories-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+    }
+    .cat-card {
+      border-radius: 20px; padding: 2rem 1.5rem;
+      cursor: none; transition: transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+      min-height: 200px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .cat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+    .cat-card:nth-child(1) { background: linear-gradient(135deg, #F2A7A7, #E8624A); }
+    .cat-card:nth-child(2) { background: linear-gradient(135deg, #6B2D6B, #A855A8); }
+    .cat-card:nth-child(3) { background: linear-gradient(135deg, #D4A853, #F2C96E); }
+    .cat-card:nth-child(4) { background: linear-gradient(135deg, #7ECBB5, #2E9E85); }
+    .cat-emoji { font-size: 3.5rem; margin-bottom: 1rem; }
+    .cat-name {
+      font-family: 'Playfair Display', serif;
+      color: white; font-size: 1.3rem; font-weight: 700;
+    }
+    .cat-count { color: rgba(255,255,255,0.75); font-size: 0.85rem; margin-top: 0.3rem; }
+    .cat-arrow {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      color: rgba(255,255,255,0.6); font-size: 1.2rem;
+      transition: transform 0.3s;
+    }
+    .cat-card:hover .cat-arrow { transform: translate(4px, -4px); color: white; }
+
+    /* ─── PRODUCTS ─── */
+    .products-section { background: white; }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+    }
+    .product-card {
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: none;
+      background: white;
+    }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+    .product-img {
+      height: 260px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6rem; position: relative;
+      overflow: hidden;
+    }
+    .product-img::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.05));
+    }
+    .product-badge {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--coral); color: white;
+      font-size: 0.7rem; font-weight: 600;
+      padding: 0.3rem 0.7rem; border-radius: 50px; z-index: 2;
+    }
+    .product-wish {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: white; border: none; cursor: none;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; z-index: 2;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .product-wish:hover { transform: scale(1.15); }
+    .product-info { padding: 1.5rem; }
+    .product-brand { font-size: 0.75rem; color: #999; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .product-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .product-rating { display: flex; gap: 0.2rem; font-size: 0.8rem; color: var(--gold); margin-bottom: 0.8rem; }
+    .product-footer { display: flex; align-items: center; justify-content: space-between; }
+    .product-price { font-size: 1.2rem; font-weight: 700; color: var(--coral); }
+    .product-price s { color: #bbb; font-size: 0.9rem; font-weight: 400; margin-left: 0.5rem; }
+    .add-btn {
+      background: var(--deep); color: white;
+      border: none; padding: 0.6rem 1.2rem;
+      border-radius: 50px; font-size: 0.8rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: none; transition: background 0.3s;
+    }
+    .add-btn:hover { background: var(--coral); }
+
+    /* ─── BANNER ─── */
+    .banner {
+      margin: 0 5rem 6rem;
+      border-radius: 30px;
+      background: linear-gradient(135deg, var(--plum) 0%, #2E1065 50%, var(--deep) 100%);
+      padding: 5rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .banner::before {
+      content: '';
+      position: absolute; top: -50%; right: -10%;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,168,83,0.2), transparent);
+    }
+    .banner-tag { color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1rem; }
+    .banner-title {
+      font-family: 'Playfair Display', serif;
+      color: white; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900;
+      line-height: 1.1; margin-bottom: 1.5rem;
+    }
+    .banner-title em { color: var(--gold); font-style: italic; }
+    .banner-sub { color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 2rem; }
+    .btn-gold {
+      background: var(--gold); color: var(--deep);
+      border: none; padding: 1rem 2.2rem;
+      border-radius: 50px; font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif; font-weight: 600;
+      cursor: none; transition: all 0.3s;
+      box-shadow: 0 8px 30px rgba(212,168,83,0.4);
+    }
+    .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(212,168,83,0.5); }
+    .banner-right {
+      display: flex; justify-content: center; align-items: center;
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .mini-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px; padding: 1.5rem 1rem;
+      text-align: center; color: white; min-width: 100px;
+      transition: transform 0.3s;
+    }
+    .mini-card:hover { transform: translateY(-5px); }
+    .mini-card .emoji { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+    .mini-card span { font-size: 0.8rem; opacity: 0.8; }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .testi-card {
+      background: white; border-radius: 20px;
+      padding: 2rem; border: 1px solid rgba(0,0,0,0.06);
+      transition: transform 0.3s;
+    }
+    .testi-card:hover { transform: translateY(-5px); }
+    .testi-stars { color: var(--gold); margin-bottom: 1rem; font-size: 0.9rem; }
+    .testi-text { font-style: italic; color: #555; line-height: 1.7; margin-bottom: 1.5rem; }
+    .testi-author { display: flex; align-items: center; gap: 1rem; }
+    .testi-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .testi-name { font-weight: 600; font-size: 0.9rem; }
+    .testi-loc { font-size: 0.75rem; color: #999; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--deep); color: white;
+      padding: 4rem 5rem 2rem;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 3rem;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--blush), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    .footer-desc { color: rgba(255,255,255,0.55); line-height: 1.7; font-size: 0.9rem; }
+    .footer-heading { font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 0.8rem; color: var(--gold); margin-bottom: 1.2rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--blush); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+    .footer-socials { display: flex; gap: 1rem; }
+    .social-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); border: none;
+      color: white; cursor: none; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s;
+    }
+    .social-btn:hover { background: var(--coral); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { min-height: 300px; }
+      .hero-left { padding: 7rem 1.5rem 3rem; }
+      .section { padding: 4rem 1.5rem; }
+      .categories-grid { grid-template-columns: repeat(2,1fr); }
+      .products-grid { grid-template-columns: 1fr; }
+      .banner { margin: 0 1.5rem 4rem; padding: 2.5rem 1.5rem; grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      footer { padding: 3rem 1.5rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">ICONIQ</div>
+  <ul class="nav-links">
+    <li><a href="#">Women</a></li>
+    <li><a href="#">Men</a></li>
+    <li><a href="#">Kids</a></li>
+    <li><a href="#">Sale</a></li>
+    <li><a href="#">Brands</a></li>
+  </ul>
+  <button class="nav-cart">🛒 Cart (3)</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">✨ New Arrivals 2025</div>
+    <h1 class="hero-title">
+      Wear Your<br/>
+      <em>Iconic</em><br/>
+      Story
+    </h1>
+    <p class="hero-sub">
+      Discover outfits that speak before you say a word. Curated fashion for those who dare to be remembered.
+    </p>
+    <div class="hero-btns">
+      <button class="btn-primary">Shop Now →</button>
+      <button class="btn-outline">View Lookbook</button>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">50K+</div>
+        <div class="stat-label">Happy Customers</div>
+      </div>
+      <div>
+        <div class="stat-num">1200+</div>
+        <div class="stat-label">Outfit Styles</div>
+      </div>
+      <div>
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Avg. Rating</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-blob blob1"></div>
+    <div class="hero-blob blob2"></div>
+    <div class="hero-blob blob3"></div>
+    <div class="hero-card">
+      <div class="hero-card-tag">🔥 Trending</div>
+      <div class="hero-card-img">👗</div>
+      <div class="hero-card-name">Silk Evening Gown</div>
+      <div class="hero-card-price">₹4,299</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Free Shipping Over ₹999</span><span class="dot">✦</span>
+    <span>New Arrivals Every Week</span><span class="dot">✦</span>
+    <span>Easy Returns</span><span class="dot">✦</span>
+    <span>Sustainable Fashion</span><span class="dot">✦</span>
+    <span>Exclusive Member Offers</span><span class="dot">✦</span>
+    <span>Free Shipping Over ₹999</span><span class="dot">✦</span>
+    <span>New Arrivals Every Week</span><span class="dot">✦</span>
+    <span>Easy Returns</span><span class="dot">✦</span>
+    <span>Sustainable Fashion</span><span class="dot">✦</span>
+    <span>Exclusive Member Offers</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">Browse Categories</div>
+    <h2 class="section-title">Shop by Style</h2>
+  </div>
+  <div class="categories-grid">
+    <div class="cat-card">
+      <span class="cat-arrow">↗</span>
+      <div class="cat-emoji">👗</div>
+      <div class="cat-name">Women's</div>
+      <div class="cat-count">420 styles</div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-arrow">↗</span>
+      <div class="cat-emoji">🧥</div>
+      <div class="cat-name">Men's</div>
+      <div class="cat-count">310 styles</div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-arrow">↗</span>
+      <div class="cat-emoji">👟</div>
+      <div class="cat-name">Footwear</div>
+      <div class="cat-count">215 styles</div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-arrow">↗</span>
+      <div class="cat-emoji">👜</div>
+      <div class="cat-name">Accessories</div>
+      <div class="cat-count">180 styles</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section products-section">
+  <div class="section-header">
+    <div class="section-tag">Featured</div>
+    <h2 class="section-title">Trending Right Now</h2>
+  </div>
+  <div class="products-grid">
+
+    <div class="product-card">
+      <div class="product-img" style="background: linear-gradient(135deg,#F9E0E0,#F2A7A7);">
+        <span class="product-badge">NEW</span>
+        <button class="product-wish">🤍</button>
+        👗
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Zara Premium</div>
+        <div class="product-name">Floral Midi Dress</div>
+        <div class="product-rating">★★★★★ <span style="color:#999;margin-left:4px">4.9 (128)</span></div>
+        <div class="product-footer">
+          <div class="product-price">₹2,499 <s>₹3,999</s></div>
+          <button class="add-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img" style="background: linear-gradient(135deg,#E8D5F5,#A855A8);">
+        <span class="product-badge" style="background:var(--gold)">SALE</span>
+        <button class="product-wish">❤️</button>
+        🧥
+      </div>
+      <div class="product-info">
+        <div class="product-brand">H&M Studio</div>
+        <div class="product-name">Oversized Blazer</div>
+        <div class="product-rating">★★★★☆ <span style="color:#999;margin-left:4px">4.6 (94)</span></div>
+        <div class="product-footer">
+          <div class="product-price">₹3,199 <s>₹5,499</s></div>
+          <button class="add-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img" style="background: linear-gradient(135deg,#D5EAF5,#7ECBB5);">
+        <span class="product-badge" style="background:var(--plum)">HOT</span>
+        <button class="product-wish">🤍</button>
+        👕
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Mango</div>
+        <div class="product-name">Linen Co-ord Set</div>
+        <div class="product-rating">★★★★★ <span style="color:#999;margin-left:4px">5.0 (56)</span></div>
+        <div class="product-footer">
+          <div class="product-price">₹1,899 <s>₹2,799</s></div>
+          <button class="add-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img" style="background: linear-gradient(135deg,#FFF0D5,#D4A853);">
+        <button class="product-wish">🤍</button>
+        👠
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Steve Madden</div>
+        <div class="product-name">Block Heel Pumps</div>
+        <div class="product-rating">★★★★☆ <span style="color:#999;margin-left:4px">4.4 (73)</span></div>
+        <div class="product-footer">
+          <div class="product-price">₹4,599 <s>₹6,999</s></div>
+          <button class="add-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img" style="background: linear-gradient(135deg,#E8F5E0,#4CAF50);">
+        <span class="product-badge" style="background:var(--mint);color:var(--deep)">ECO</span>
+        <button class="product-wish">🤍</button>
+        🧣
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Fabindia</div>
+        <div class="product-name">Handwoven Shawl</div>
+        <div class="product-rating">★★★★★ <span style="color:#999;margin-left:4px">4.8 (42)</span></div>
+        <div class="product-footer">
+          <div class="product-price">₹1,299 <s>₹1,799</s></div>
+          <button class="add-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img" style="background: linear-gradient(135deg,#1A0A2E,#6B2D6B);">
+        <span class="product-badge">LUXURY</span>
+        <button class="product-wish">🤍</button>
+        👜
+      </div>
+      <div class="product-info">
+        <div class="product-brand">Charles & Keith</div>
+        <div class="product-name">Structured Tote Bag</div>
+        <div class="product-rating">★★★★★ <span style="color:#999;margin-left:4px">4.9 (88)</span></div>
+        <div class="product-footer">
+          <div class="product-price">₹5,999 <s>₹8,999</s></div>
+          <button class="add-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROMO BANNER -->
+<div class="banner">
+  <div>
+    <div class="banner-tag">✦ Limited Time Offer</div>
+    <h2 class="banner-title">Get <em>40% Off</em><br/>Your First Order</h2>
+    <p class="banner-sub">Join ICONIQ and unlock exclusive member pricing, early access to sales, and curated style drops every week.</p>
+    <button class="btn-gold">Claim My Discount →</button>
+  </div>
+  <div class="banner-right">
+    <div class="mini-card"><span class="emoji">🚚</span><span>Free Delivery</span></div>
+    <div class="mini-card"><span class="emoji">🔄</span><span>Easy Returns</span></div>
+    <div class="mini-card"><span class="emoji">🔒</span><span>Secure Pay</span></div>
+    <div class="mini-card"><span class="emoji">⭐</span><span>Top Rated</span></div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">Reviews</div>
+    <h2 class="section-title">What Our Customers Say</h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Absolutely obsessed with my new midi dress! The quality is stunning and delivery was so fast. ICONIQ is now my go-to for everything fashion."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#F9E0E0">👩</div>
+        <div>
+          <div class="testi-name">Priya Sharma</div>
+          <div class="testi-loc">Mumbai, Maharashtra</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The blazer fits perfectly and looks even better in person. Got so many compliments at work. Definitely ordering more pieces!"</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#E8D5F5">👨</div>
+        <div>
+          <div class="testi-name">Rahul Mehta</div>
+          <div class="testi-loc">Delhi, NCR</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Returns were super easy and the customer support team was amazing. The shawl is just gorgeous — exactly what I needed for the wedding season."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:#D5EAF5">👩</div>
+        <div>
+          <div class="testi-name">Anjali Nair</div>
+          <div class="testi-loc">Bangalore, Karnataka</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">ICONIQ</div>
+      <p class="footer-desc">Curated fashion for bold souls. We bring the world's most iconic outfits right to your doorstep.</p>
+    </div>
+    <div>
+      <div class="footer-heading">Shop</div>
+      <ul class="footer-links">
+        <li><a href="#">Women's</a></li>
+        <li><a href="#">Men's</a></li>
+        <li><a href="#">Footwear</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Sale</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Help</div>
+      <ul class="footer-links">
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Size Guide</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Sustainability</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 ICONIQ. All rights reserved.</span>
+    <div class="footer-socials">
+      <button class="social-btn">𝕏</button>
+      <button class="social-btn">f</button>
+      <button class="social-btn">in</button>
+      <button class="social-btn">▶</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  // Wishlist toggle
+  document.querySelectorAll('.product-wish').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+    });
+  });
+
+  // Add to cart animation
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.textContent = '✓ Added!';
+      btn.style.background = '#2E9E85';
+      setTimeout(() => {
+        btn.textContent = '+ Add';
+        btn.style.background = '';
+      }, 1500);
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.product-card, .cat-card, .testi-card, .mini-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
